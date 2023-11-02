@@ -1,0 +1,16 @@
+.about-us-message {
+	.card {
+		.main-rect {
+			background-color: var(--accent-2);
+			border: 2px solid var(--accent-9);
+		}
+
+		.rect-back {
+			top: -1rem;
+			right: -1rem;
+			width: 100%;
+			height: 100%;
+			border: 1px solid var(--gray-6);
+		}
+	}
+}

@@ -1,0 +1,22 @@
+.about-us-channels {
+	.card-link {
+		box-shadow: var(--shadow-3);
+		border-radius: var(--radius-2);
+		border: 1px solid var(--gray-3);
+		background-color: white;
+		min-width: 18rem;
+
+		@media (min-width: 1024px) {
+			min-width: 24rem;
+		}
+
+		&:hover {
+			box-shadow: var(--shadow-4);
+			border-color: var(--accent-9);
+		}
+
+		.text {
+			flex-grow: 1;
+		}
+	}
+}

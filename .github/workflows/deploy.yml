@@ -1,0 +1,89 @@
+name: Deploy
+run-name: ${{ github.actor }} is deploying from branch ${{ github.ref }}
+
+# Uncomment this if you want to deploy manually
+on: workflow_dispatch
+
+# Uncomment this if you want to deploy on master branch
+# on:
+#   push:
+#     branches:
+#       - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code from repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build production
+        run: |
+          cp production.env .env
+          yarn build
+
+      - name: Tar project (Must use tar to avoid error)
+        run: tar -czf production-fe.tar.gz build Dockerfile nginx.conf
+
+      - name: Copy build folder to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          port: 22
+          source: production-fe.tar.gz
+          target: /root/workspace
+
+      - name: Untar folder
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd workspace
+            rm -rf the-rike-fe
+            tar -xf production-fe.tar.gz --one-top-level=the-rike-fe
+
+      - name: Copy ssl certificate
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd workspace
+            cp -R ssl-certificate the-rike-fe
+
+      - name: Build docker image
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd workspace/the-rike-fe
+            docker build . -t the-rike-fe
+
+      - name: Run docker container
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          port: 22
+          script: |
+            docker rm -f the-rike-fe || true
+            docker run -d -p 80:80 -p 443:443 --restart=always --name the-rike-fe --network production-net the-rike-fe

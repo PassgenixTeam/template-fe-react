@@ -1,0 +1,61 @@
+.about-us-mission-and-vision {
+	.subtitle {
+		.line {
+			height: 1px;
+			width: 3rem;
+			background-color: var(--accent-9);
+		}
+
+		.text {
+			--letter-spacing: 0.6rem;
+			color: var(--accent-11);
+		}
+	}
+
+	.title {
+		--heading-letter-spacing: -0.08rem;
+		color: var(--gray-12);
+	}
+
+	.left-content {
+		.circle {
+			top: 0;
+			left: 0;
+			border-radius: 999px;
+			border: 1px solid var(--gray-9);
+		}
+
+		.image {
+			top: 0;
+			left: 0;
+			border-radius: 999px;
+			margin: 1rem;
+		}
+
+		.card {
+			background-color: var(--gray-2);
+			max-width: 52rem;
+		}
+	}
+
+	.right-content {
+		.circle {
+			top: 0;
+			right: 0;
+			border-radius: 999px;
+			border: 1px solid var(--gray-9);
+		}
+
+		.image {
+			top: 0;
+			right: 0;
+			border-radius: 999px;
+			margin: 1rem;
+		}
+
+		.card {
+			background-color: var(--gray-2);
+			max-width: 52rem;
+		}
+	}
+}
